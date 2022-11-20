@@ -6,6 +6,8 @@ import { UserContext } from '../../contexts/UserContext';
 import axios from "axios";
 import GenericTopBar from "../Tops/GenericTopBar";
 import { ThreeDots } from 'react-loader-spinner';
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 export default function CreateNewProduct({ onCreateNewRecommendation = () => 0, disabled = false }) {
@@ -15,9 +17,13 @@ export default function CreateNewProduct({ onCreateNewRecommendation = () => 0, 
   const [price, setPrice] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
   const { user } = useContext(UserContext);
   const {token} = user;
+
+  const API_LOCAL = process.env.REACT_APP_LOCAL;
+  const API_DEPLOY = process.env.REACT_APP_API_BASE_URL;
+  const API_LOCALHOST = `${API_LOCAL}/products`;
+  const API_LOCALDEPLOY = `${API_DEPLOY}/products`;
 
   const config = {
     headers: {
@@ -36,7 +42,8 @@ export default function CreateNewProduct({ onCreateNewRecommendation = () => 0, 
         price      
     }
 
-    const promise=axios.post(`https://projeto-autoral-guilherme.herokuapp.com/products`, postTransaction, config);
+    //const promise=axios.post(`https://projeto-autoral-guilherme.herokuapp.com/products`, postTransaction, config);
+    const promise=axios.post(`${API_LOCALHOST}`, postTransaction, config);
 
     promise.then(resposta => {
         setDescription("");

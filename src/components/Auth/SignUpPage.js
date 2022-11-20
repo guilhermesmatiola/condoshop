@@ -10,23 +10,29 @@ import { ThreeDots } from 'react-loader-spinner';
 export default function LoginPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false)
-  const [city, setCity] = useState('');
+  const [torre, settorre] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [picture, setPicture] = useState('');
   const [password, setPassword] = useState('');
+  const API_LOCAL = process.env.LOCALHOST_URL;
+  const API_DEPLOY = process.env.REACT_APP_API_BASE_URL;
+  const API_LOCALHOST = `${API_LOCAL}/signup`
+  const API_LOCALDEPLOY = `${API_DEPLOY}/signup`
 
   function signUpUser() {
     setIsLoading(true);
     const body = {
       name,
       email,
+      image: picture,
       password,
-      city,
-      image: picture
+      torre
     };
 
-    const request = axios.post('https://projeto-autoral-guilherme.herokuapp.com/signup', body);
+    console.log(API_LOCALHOST)
+    console.log(body)
+    const request = axios.post("http://localhost:5000/signup", body);
 
     request.then(response => {
       setIsLoading(false);
@@ -36,7 +42,7 @@ export default function LoginPage() {
     request.catch(error => {
       if(error){
         alert("Dados incorretos!");
-        window.location.reload()
+        //window.location.reload()
       }
   });
   }
@@ -55,10 +61,10 @@ export default function LoginPage() {
           <Input disabled type="text" placeholder="Imagem" id="image" value={picture} onChange={e => setPicture(e.target.value)} />
           <Input disabled type="password" placeholder="Senha" id="password" value={password} onChange={e => setPassword(e.target.value)} />
           <Grid>
-            <Button disabled active={city === 'Torre 1'} onClick={() => setCity('Torre 1')}> Torre 1 </Button>
-            <Button disabled active={city === 'Torre 2'} onClick={() => setCity('Torre 2')}> Torre 2 </Button>
+            <Button disabled active={torre === 'Torre 1'} onClick={() => settorre('Torre 1')}> Torre 1 </Button>
+            <Button disabled active={torre === 'Torre 2'} onClick={() => settorre('Torre 2')}> Torre 2 </Button>
           </Grid>
-          <Button disabled id="cadastrar" opacity={0.7} > {<ThreeDots color={"#ffffff"} width={51} />} </Button>
+          <Button disabled id="cadastrar" opatorre={0.7} > {<ThreeDots color={"#ffffff"} width={51} />} </Button>
         </>
         
       ):(
@@ -69,8 +75,8 @@ export default function LoginPage() {
         <Input type="text" placeholder="Imagem" id="image" value={picture} onChange={e => setPicture(e.target.value)} />
         <Input type="password" placeholder="Senha" id="password" value={password} onChange={e => setPassword(e.target.value)} />
         <Grid>
-          <Button active={city === 'Torre 1'} onClick={() => setCity('Torre 1')}> Torre 1 </Button>
-          <Button active={city === 'Torre 2'} onClick={() => setCity('Torre 2')}> Torre 2 </Button>
+          <Button active={torre === 'Torre 1'} onClick={() => settorre('Torre 1')}> Torre 1 </Button>
+          <Button active={torre === 'Torre 2'} onClick={() => settorre('Torre 2')}> Torre 2 </Button>
         </Grid>
         <Button id="cadastrar" onClick={signUpUser}> Cadastrar </Button>
       </>

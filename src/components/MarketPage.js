@@ -7,6 +7,8 @@ import TopBar from './Tops/TopBar';
 import InsertButton from './Support/InsertProductButton';
 import CartContext from '../contexts/CartContext';
 import { UserContext } from '../contexts/UserContext';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default function MarketPage() {
   const { user } = useContext(UserContext);
@@ -17,6 +19,14 @@ export default function MarketPage() {
   const context = useContext(UserContext);
   const userMaster = context.user.user;
 
+  const API_LOCAL = process.env.REACT_APP_LOCAL;
+  const API_DEPLOY = process.env.REACT_APP_API_BASE_URL;
+  const API_LOCALHOST = `${API_LOCAL}/products`
+  const API_LOCALDEPLOY = `${API_DEPLOY}/products`
+
+  console.log(process.env.REACT_APP_LOCAL)
+  console.log(process.env.REACT_APP_API_BASE_URL)
+
 
   useEffect(() => {
     
@@ -26,7 +36,8 @@ export default function MarketPage() {
       }
     };
 
-    const request = axios.get('https://projeto-autoral-guilherme.herokuapp.com/products', config);
+    //const request = axios.get(`${API_LOCALDEPLOY}`, config);
+    const request = axios.get(`${API_LOCALHOST}`, config);
 
     request.then(response => {
       setItems(response.data);

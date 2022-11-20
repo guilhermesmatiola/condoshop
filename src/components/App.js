@@ -6,7 +6,6 @@ import RecommendationsPage from './Recommendations'
 import CreateNewProduct from './createRecommendation/createRecommendation';
 import Top from '../pages/Timeline/Top/index'
 import UserRecommendation from './createUserRecommendation/UserRecommendation';
-
 import { UserProvider } from '../contexts/UserContext';
 
 function App() {
@@ -21,8 +20,6 @@ function App() {
           <Route path="/createproduct" element = { <CreateNewProduct />} />
           <Route path="/top" element = { <Top />} />
           <Route path="/userrecommendation" element = { <UserRecommendation />} />
-
-
         </Routes>
       </BrowserRouter>
     </UserProvider>

@@ -15,13 +15,17 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const API_LOCAL = process.env.LOCALHOST_URL;
+  const API_DEPLOY = process.env.REACT_APP_API_BASE_URL;
+  const API_LOCALHOST = `${API_LOCAL}/signin`
+  const API_LOCALDEPLOY = `${API_DEPLOY}/signin`
 
   function login(event) {
     event.preventDefault();
 
     setIsLoading(true);
     const body = { email, password };
-    const request = axios.post('https://projeto-autoral-guilherme.herokuapp.com/signin', body);
+    const request = axios.post("http://localhost:5000/signin", body);
 
     request.then(response => {
       setUser(response.data);
@@ -31,7 +35,7 @@ export default function LoginPage() {
 
     request.catch(error => {
       if(error){
-        alert("Dados incorretos!");
+        alert(error);
         window.location.reload()
       }
     });

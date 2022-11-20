@@ -1,22 +1,20 @@
 import { useContext, useEffect, useState, React } from 'react';
-// import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import RecommendationTopBar from './Tops/TopBarRecommendations';
 import { UserContext } from '../contexts/UserContext';
-import UserRecommendationCreate from './Support/CreateRecommend'
+import UserRecommendationCreate from './Support/CreateRecommend';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default function RecommendationsPage() {
   const { user } = useContext(UserContext);
-  // const navigate = useNavigate();
   const [items, setItems] = useState([]);
-
   const [isFavorite, setIsFavorite] = useState(false);
-
-
-
-
-
+  const API_LOCAL = process.env.REACT_APP_LOCAL;
+  const API_DEPLOY = process.env.REACT_APP_API_BASE_URL;
+  const API_LOCALHOST = `${API_LOCAL}/recommendations`
+  const API_LOCALDEPLOY = `${API_DEPLOY}/recommendations`
 
   // let likeoutline="thumbs-up-outline";
   // const [type, setType] = React.useState(likeoutline);
@@ -38,18 +36,11 @@ export default function RecommendationsPage() {
   //   }   
   // }
 
-
-
-
-
-
-
-
-
   async function Favorite(id) {
         
     try {
-        await axios.post(`https://projeto-autoral-guilherme.herokuapp.com/${id}/upvote`)
+        //await axios.post(`https://projeto-autoral-guilherme.herokuapp.com/${id}/upvote`);
+        await axios.post(`${API_LOCAL}/${id}/upvote`);
   
         setIsFavorite(!isFavorite);
         renderPosts();
@@ -61,7 +52,8 @@ export default function RecommendationsPage() {
 
   async function Deslike(id) {
       try {
-          await axios.post(`https://projeto-autoral-guilherme.herokuapp.com/${id}/downvote`);
+          //await axios.post(`https://projeto-autoral-guilherme.herokuapp.com/${id}/downvote`);
+          await axios.post(`${API_LOCAL}/${id}/downvote`);
 
           setIsFavorite(false);
           renderPosts();
@@ -77,7 +69,8 @@ export default function RecommendationsPage() {
       }
     };
     
-    const request = axios.get('https://projeto-autoral-guilherme.herokuapp.com/recommendations', config);
+    //const request = axios.get('https://projeto-autoral-guilherme.herokuapp.com/recommendations', config);
+    const request = axios.get(`${API_LOCALHOST}`, config);
 
     request.then(response => {
       setItems(response.data);
