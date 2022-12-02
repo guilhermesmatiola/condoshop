@@ -35,9 +35,10 @@ export default function MarketPage() {
         Authorization: `Bearer ${user.token}`
       }
     };
-
+    
     //const request = axios.get(`${API_LOCALDEPLOY}`, config);
-    const request = axios.get(`${API_LOCALHOST}`, config);
+    //const request = axios.get(`${API_LOCALHOST}`, config);
+    const request = axios.get(`http://localhost:5000/products`, config);
 
     request.then(response => {
       setItems(response.data);
