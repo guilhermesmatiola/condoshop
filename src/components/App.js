@@ -21,7 +21,7 @@ function App() {
           <Route path="/createproduct" element = { <CreateNewProduct />} />
           <Route path="/top" element = { <Top />} />
           <Route path="/userrecommendation" element = { <UserRecommendation />} />
-          <Route path='/shop' element={ <RfidShop /> } />
+          <Route path='/tagproduto' element={ <RfidShop /> } />
         </Routes>
       </BrowserRouter>
     </UserProvider>

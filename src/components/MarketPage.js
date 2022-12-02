@@ -16,6 +16,9 @@ export default function MarketPage() {
   const [items, setItems] = useState(null);
   const [cart, setCart] = useState([]);
 
+  const [codigoPesquisa, setCodigoPesquisa] = useState('');
+  const [produtolido, setProdutolido] = useState([]);
+
   const context = useContext(UserContext);
   const userMaster = context.user.user;
 
@@ -79,6 +82,30 @@ export default function MarketPage() {
     return 'Não há items a serem visualizados!';
   }
 
+  function submitCodigo(event) {
+
+    event.preventDefault();
+
+    const body = {
+      codigo: codigoPesquisa
+    };
+    const request = axios.post("http://localhost:5000/rfidtag", body);
+
+
+    request.then(response => {
+      setCodigoPesquisa("");
+      setProdutolido(response.data);
+
+    });
+
+    request.catch(error => {
+      if(error){
+        alert("Dados incorretos!");
+      }
+  });
+
+  }
+
   if(userMaster.name==="master"){
     return (
       <CartContext.Provider value={{ cart, addToCart }}>
@@ -86,6 +113,7 @@ export default function MarketPage() {
       <TopBar />
         <Container>
           <InsertButton onClick={()=>navigate("/createproduct")} >Inserir mais produtos</InsertButton  >
+          <InsertButton onClick={()=>navigate("/tagproduto")} >Relacionar produto com tag</InsertButton  >
           
           {buildItems()}
         </Container>
@@ -101,6 +129,22 @@ export default function MarketPage() {
           <Container>
             <h1>Adquira seus produtos abaixo!</h1>
             <button onClick={BuyItems} >Finalizar o pedido</button>
+
+            <Form2 onSubmit={submitCodigo}>
+                      <input type="text" placeholder="Digite o código" id="codigo" value={codigoPesquisa} onChange={e => setCodigoPesquisa(e.target.value)}/>
+                      <button type='submit' > Ler tag </button>
+            </Form2>
+
+            {produtolido.map((item, index)=>(
+                      <Recommendation>
+                          <Titles>
+                              <h1>{item.name}</h1>
+                              <h3>{item.description}</h3>
+                              <h3>Preço: R${item.price} </h3>
+                          </Titles>
+                      </Recommendation>
+            ))}
+
             
             {buildItems()}
           </Container>
@@ -111,6 +155,89 @@ export default function MarketPage() {
 
   
 }
+const Recommendation = styled.div`
+  margin-top: 8px;
+  border: 2px solid black;
+  min-width: 300px;
+  min-height: 120px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  
+  img{
+    height: 100px;
+    width: 100px;
+  }
+  h2{
+    display: flex;
+    flex-direction: row;
+    font-size: 20px;
+    h1{
+      color:red;
+      font-size: 20px;
+      margin-right: 2px;
+    }
+  }
+`
+const Titles = styled.div`
+  display: flex;
+  flex-direction: column;
+  h1{
+    color:black;
+    font-size: 28px;
+  }
+  h3{
+    margin: 3px 3px 3px 0;
+  }
+`
+
+const Form2 = styled.form`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-right: 36px;
+    margin-left: 36px;
+    margin-top:20px;
+    input {
+        height: 30px;
+        margin-right: 36px;
+        margin-left: 36px;
+        min-width: 80px;
+        margin-bottom: 6px;
+        border-radius: 5px;
+        border: 1px solid #D4D4D4; 
+        padding-left:11px ;
+        box-sizing: border-box;
+    }
+    input::placeholder {
+        color: grey;
+        font-size: 20px;
+        font-style: italic;
+        box-sizing: border-box;
+    }
+    button {
+        min-width: 60px;
+        height: 35px;
+        margin-right: 36px;
+        margin-left: 36px;
+        text-align: center;
+        background: #0384fc;
+        color: #FFFFFF;
+        font-size: 21px;
+        border: none;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        a{
+            text-decoration: none;
+        }
+        
+    }
+`
+
 const Margin = styled.div`
   margin-top: 100px;
   background-color: #38b6ff;
