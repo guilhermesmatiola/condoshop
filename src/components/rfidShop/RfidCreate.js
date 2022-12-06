@@ -9,7 +9,7 @@ import { ThreeDots } from 'react-loader-spinner';
 import dotenv from 'dotenv'; 
 dotenv.config();
 
-export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled = false }) {
+export default function RfidAssociate({ onCreateNewRecommendation = () => 0, disabled = false }) {
   const [EPC, setEPC] = useState("");
   const [compra, setCompra] = useState([])
 
@@ -28,12 +28,6 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
       Authorization: `Bearer ${token}`
     }
   };
-  
-  useEffect(() => {
-    document.getElementById('name').focus();
-    document.getElementById('name').select();
-  });
-
 
     function postRfid(event){
 
@@ -42,25 +36,26 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
         setIsLoading(true);
 
         const postRfid={
-            codigo:EPC.toUpperCase()
+            codigo:EPC
         }
-        
+
         //const promise=axios.post(`https://projeto-autoral-guilherme.herokuapp.com/recommendations`, postTransaction, config);
         const promise=axios.post(`${"http://localhost:5000/rfidtag"}`, postRfid, config);
 
         promise.then(resposta => {
             setEPC("");
-   
+            setIsLoading(false);
+
+            console.log(resposta.data)
+            setCompra = resposta.data
             let tempCompra=compra;
+            let resp = resposta.data;
+
+            //console.log(resp);
 
             tempCompra.push(resposta.data[0])
-
             setCompra(tempCompra)
-            console.log(compra[0].name)
-            console.log(compra)
-            setIsLoading(false);
-            document.getElementById('name').focus();
-            document.getElementById('name').select();
+            //navigate("/shop");
         });
 
         promise.catch(error => {
@@ -70,10 +65,7 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
             }
         });
     }
-    let total=0;
-    for(let i = 0; i < compra.length; i++){
-        total += compra[i].price;
-    }
+
 
   return (
     <Container>
@@ -85,122 +77,31 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
                     <button disabled id="submit" opacity={0.7} >{<ThreeDots color={"#ffffff"} width={51} />}  </button>
                 </Form>
             ):(
-                <><Form background={"#ffffff"} color={"#666666"} onSubmit={postRfid}>
+                <Form background={"#ffffff"} color={"#666666"} onSubmit={postRfid}>
                     <input type="text" id="name" placeholder="produto" value={EPC} onChange={e => setEPC(e.target.value)} disabled={disabled} />
                     <button id="submit">Ler tag</button>
                 </Form>
-                <Compra>
-                    <RowHeader><h2> Produto</h2> <h1> Valor </h1></RowHeader>
-                    {compra.length > 0 ? compra.map((item, index)=>{ 
-                        return(<Row key={item.id}><h2> {item.name}</h2> <h1> R$ {item.price} </h1></Row>)
-                        
-                    }) : 
-                        <h1>Nenhum produto no carrinho</h1>
-                    }
-                    <RowHeader><h2> Total:</h2> <h1> R$ {total} </h1></RowHeader>
-                </Compra> 
-                </>  
-                
             )}
-            {compra.length > 0 ?  
-                        <FinalizarButton>Finalizar Compra</FinalizarButton>
-                    :
-                        <></>
-                    }
+            <Rfid>
+                {compra.map((item, index)=>{
+                    <h1> {item.name} </h1>
+                })}
+            </Rfid>
+            <Warning>
+                <h3>
+                Cuidado ao postar!
+                </h3>
+            </Warning>
             <Back onClick={()=>navigate("/recommendations")}>
-                Clique aqui para voltar
+                Desistiu de postar? Clique aqui para voltar
             </Back>
     </Container>
   );
 }
+const Rfid = styled.div`
 
-const FinalizarButton=styled.button`
-
-        width: 90%;
-        font-weight: 700;
-        min-width: 100px;
-        height: 45px;
-        margin-right: 10px;
-        margin-left: 10px;
-        text-align: center;
-        background-color: darkblue;
-        color: #FFFFFF;
-        font-size: 21px;
-        border: none;
-        border-radius: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        a{
-            text-decoration: none;
-        }
-        cursor: pointer;
-
-`
-
-const Compra = styled.div`
-    width: 90%;
-    background-color: white;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
-    h1{
-        margin:10px;
-        padding:5px;
-        font-size: 15px;
-        font-weight: bold;
-    }
-`
-const Row=styled.div`
-    display: flex;
-    width:100%;
-    justify-content: row;
-    align-items: space-between;
-    h1{
-        width: 100%;
-        display:flex;
-        justify-content: flex-end;
-        margin:10px;
-        padding:5px;
-        font-size: 15px;
-        font-weight: bold;
-    }
-    h2{
-        width: 100%;
-        display:flex;
-        justify-content: flex-start;
-        margin:10px;
-        padding:5px;
-        font-size: 15px;
-        font-weight: bold; 
-    }
-`
-const RowHeader=styled.div`
-    display: flex;
-    border-radius: 5px;
-    background-color: lightgray;
-    width:100%;
-    justify-content: row;
-    align-items: space-between;
-    h1{
-        width: 100%;
-        display:flex;
-        justify-content: flex-end;
-        margin:10px;
-        padding:5px;
-        font-size: 15px;
-        font-weight: bold;
-    }
-    h2{
-        width: 100%;
-        display:flex;
-        justify-content: flex-start;
-        margin:10px;
-        padding:5px;
-        font-size: 15px;
-        font-weight: bold; 
-    }
+    width: 80%;
+    height: 20px;
 `
 
 const Back=styled.div`
@@ -228,13 +129,27 @@ const Container = styled.div`
   margin-bottom: 15px;
 `;
 
-const Form = styled.form`
+const Warning =styled.div`
+    width: 80%;
+    margin: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
+    h1{
+        font-size: 15px;
+    }
+    margin-top: 30px;
+    h3{
+        color: red;
+
+    }
+`
+
+const Form = styled.form`
+    display: flex;
+    flex-direction: column;
     width: 100%;
     input {
-        width: 90%;
         font-style: normal;
         font-weight: 700;
         font-size: 20px;
@@ -257,7 +172,6 @@ const Form = styled.form`
         font-style: italic;
     }
     button {
-        width: 90%;
         font-weight: 700;
         min-width: 100px;
         height: 45px;

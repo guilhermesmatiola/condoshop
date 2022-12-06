@@ -8,6 +8,7 @@ import Top from '../pages/Timeline/Top/index'
 import UserRecommendation from './createUserRecommendation/UserRecommendation';
 import { UserProvider } from '../contexts/UserContext';
 import RfidShop from '../components/rfidShop/RfidShop'
+import RfidAssociate from './rfidShop/RfidCreate';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/top" element = { <Top />} />
           <Route path="/userrecommendation" element = { <UserRecommendation />} />
           <Route path='/shop' element={ <RfidShop /> } />
+          <Route path='/insert' element={ <RfidAssociate /> } />
         </Routes>
       </BrowserRouter>
     </UserProvider>
