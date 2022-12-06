@@ -10,8 +10,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled = false }) {
-  const [value1, setValue1] = useState("");
-  const [rfidReturn, setRfidReturn] = useState([])
+  const [EPC, setEPC] = useState("");
+  const [compra, setCompra] = useState([])
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -32,20 +32,22 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
     function postRfid(event){
 
         event.preventDefault();
+
         setIsLoading(true);
+
         const postRfid={
-            value1
+            codigo:EPC
         }
 
         //const promise=axios.post(`https://projeto-autoral-guilherme.herokuapp.com/recommendations`, postTransaction, config);
-        const promise=axios.post(`${"http://localhost:5000/values"}`, postRfid, config);
+        const promise=axios.post(`${"http://localhost:5000/rfidtag"}`, postRfid, config);
 
         promise.then(resposta => {
-            setValue1("");
-            setRfidReturn(resposta.data)
-            // console.log(resposta.data)
+            setEPC("");
+            setCompra(...compra, [resposta.data])
+            console.log(resposta.data)
+            console.log(compra);
             navigate("/shop");
-
         });
 
         promise.catch(error => {
@@ -54,19 +56,8 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
             window.location.reload()
             }
         });
-
-        return setRfidReturn;
     }
 
-    function renderRfid(){
-        let retorno = rfidReturn
-
-        return retorno;
-    }
-
-    let retorno2 = renderRfid()
-
-    console.log(retorno2)
 
   return (
     <Container>
@@ -74,20 +65,19 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
 
             {isLoading ? (   
                 <Form background={"#f2f2f2"} color={"#afafaf"} >
-                    <input disabled type="text" id="name" placeholder="nome do produto" value={value1} onChange={e => setValue1(e.target.value)}/>
+                    <input disabled type="text" id="name" placeholder="produto" value={EPC} onChange={e => setEPC(e.target.value)}/>
                     <button disabled id="submit" opacity={0.7} >{<ThreeDots color={"#ffffff"} width={51} />}  </button>
                 </Form>
             ):(
                 <Form background={"#ffffff"} color={"#666666"} onSubmit={postRfid}>
-                    <input type="text" id="name" placeholder="nome do produto" value={value1} onChange={e => setValue1(e.target.value)} disabled={disabled} />
+                    <input type="text" id="name" placeholder="produto" value={EPC} onChange={e => setEPC(e.target.value)} disabled={disabled} />
                     <button id="submit">Ler tag</button>
                 </Form>
             )}
             <Rfid>
-                {retorno2.map((item, index)=>{
+                {compra.map((item, index)=>{
                     <h1> {item.name} </h1>
                 })}
-                {/* {rfidReturn.name} */}
             </Rfid>
             <Warning>
                 <h3>
