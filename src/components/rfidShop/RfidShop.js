@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled = false }) {
+
   const [EPC, setEPC] = useState("");
   const [compra, setCompra] = useState([])
 
@@ -31,28 +32,38 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
   
   useEffect(() => {
     document.getElementById('name').focus();
-    document.getElementById('name').select();
+    //document.getElementById('name').select();
   });
 
 
     function postRfid(event){
 
         event.preventDefault();
-
+        
         setIsLoading(true);
+
+        if (compra.filter(e => e.code === EPC.toUpperCase()).length > 0) {
+           setIsLoading(false);
+           setEPC("");
+           console.log("igual")
+           return
+        }
 
         const postRfid={
             codigo:EPC.toUpperCase()
         }
         
         //const promise=axios.post(`https://projeto-autoral-guilherme.herokuapp.com/recommendations`, postTransaction, config);
-        const promise=axios.post(`${"http://localhost:5000/rfidtag"}`, postRfid, config);
+        const promise=axios.post(`${"http://localhost:5000/rfidtag"}`, postRfid);
 
         promise.then(resposta => {
             setEPC("");
    
             let tempCompra=compra;
 
+            if(!resposta.data[0].price) {
+                return 
+            }
             tempCompra.push(resposta.data[0])
 
             setCompra(tempCompra)
@@ -92,7 +103,7 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
                 <Compra>
                     <RowHeader><h2> Produto</h2> <h1> Valor </h1></RowHeader>
                     {compra.length > 0 ? compra.map((item, index)=>{ 
-                        return(<Row key={item.id}><h2> {item.name}</h2> <h1> R$ {item.price} </h1></Row>)
+                        return(<Row key={item.code}><h2> {item.name}</h2> <h1> R$ {item.price} </h1></Row>)
                         
                     }) : 
                         <h1>Nenhum produto no carrinho</h1>
