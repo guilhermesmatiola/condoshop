@@ -131,7 +131,7 @@ export default function MarketPage() {
             <button onClick={BuyItems} >Finalizar o pedido</button>
 
             <Form2 onSubmit={submitCodigo}>
-                      <input type="text" placeholder="Digite o código" id="codigo" value={codigoPesquisa} onChange={e => setCodigoPesquisa(e.target.value)}/>
+                      <input type="text" placeholder="Leitura da tag" id="codigo" value={codigoPesquisa} onChange={e => setCodigoPesquisa(e.target.value)}/>
                       <button type='submit' > Ler tag </button>
             </Form2>
 
@@ -141,6 +141,7 @@ export default function MarketPage() {
                               <h1>{item.name}</h1>
                               <h3>{item.description}</h3>
                               <h3>Preço: R${item.price} </h3>
+                              <button onClick={() => addToCart(item)} >Adicionar</button>
                           </Titles>
                       </Recommendation>
             ))}
@@ -196,7 +197,7 @@ const Titles = styled.div`
 const Form2 = styled.form`
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 80%;
     margin-right: 36px;
     margin-left: 36px;
     margin-top:20px;
@@ -205,6 +206,7 @@ const Form2 = styled.form`
         margin-right: 36px;
         margin-left: 36px;
         min-width: 80px;
+        width: 100%;
         margin-bottom: 6px;
         border-radius: 5px;
         border: 1px solid #D4D4D4; 

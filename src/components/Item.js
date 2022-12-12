@@ -22,13 +22,13 @@ export default function Item({ item }) {
 
       <div className="right">
         <img src={image} alt={name} />
-        {cart.includes(item) ? (
+        {/* {cart.includes(item) ? (
           'Adicionado'
         ) : (
           <Button noMargin onClick={() => addToCart(item)}>
             Adicionar produto
           </Button>
-        )}
+        )} */}
       </div>
     </Container>
   );

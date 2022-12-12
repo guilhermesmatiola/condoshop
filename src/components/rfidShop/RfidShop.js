@@ -7,16 +7,21 @@ import axios from "axios";
 import GenericTopBar from "../Tops/GenericTopBar";
 import { ThreeDots } from 'react-loader-spinner';
 import dotenv from 'dotenv'; 
+import Item from '../Item';
+
 dotenv.config();
 
 export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled = false }) {
   const [value1, setValue1] = useState("");
+  const [value2, setValue2] = useState("");
   const [rfidReturn, setRfidReturn] = useState([])
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
   const {token} = user;
+
+  const [items, setItems] = useState([]);
 
   const API_LOCAL = process.env.REACT_APP_LOCAL;
   const API_DEPLOY = process.env.REACT_APP_API_BASE_URL;
@@ -34,7 +39,8 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
         event.preventDefault();
         setIsLoading(true);
         const postRfid={
-            value1
+            value1,
+            value2
         }
 
         //const promise=axios.post(`https://projeto-autoral-guilherme.herokuapp.com/recommendations`, postTransaction, config);
@@ -44,7 +50,7 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
             setValue1("");
             setRfidReturn(resposta.data)
             // console.log(resposta.data)
-            navigate("/shop");
+            navigate("/market");
 
         });
 
@@ -66,7 +72,31 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
 
     let retorno2 = renderRfid()
 
-    console.log(retorno2)
+    console.log(retorno2);
+
+    useEffect(() => {
+    
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          }
+        };
+        
+        //const request = axios.get(`${API_LOCALDEPLOY}`, config);
+        //const request = axios.get(`${API_LOCALHOST}`, config);
+        const request = axios.get(`http://localhost:5000/products`, config);
+    
+        request.then(response => {
+          setItems(response.data);
+        });
+    
+        request.catch(error => {
+          console.log(error);
+        });
+      }, []);
+
+      console.log(items)
+
 
   return (
     <Container>
@@ -74,12 +104,14 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
 
             {isLoading ? (   
                 <Form background={"#f2f2f2"} color={"#afafaf"} >
-                    <input disabled type="text" id="name" placeholder="nome do produto" value={value1} onChange={e => setValue1(e.target.value)}/>
+                    <input disabled type="text" id="name" placeholder="tag do produto" value={value1} onChange={e => setValue1(e.target.value)}/>
+                    <input disabled type="text" id="name" placeholder="id do produto (consulte abaixo)" value={value2} onChange={e => setValue2(e.target.value)}/>
                     <button disabled id="submit" opacity={0.7} >{<ThreeDots color={"#ffffff"} width={51} />}  </button>
                 </Form>
             ):(
                 <Form background={"#ffffff"} color={"#666666"} onSubmit={postRfid}>
-                    <input type="text" id="name" placeholder="nome do produto" value={value1} onChange={e => setValue1(e.target.value)} disabled={disabled} />
+                    <input type="text" id="name" placeholder="tag do produto" value={value1} onChange={e => setValue1(e.target.value)} disabled={disabled} />
+                    <input type="text" id="name" placeholder="id do produto (consulte abaixo)" value={value2} onChange={e => setValue2(e.target.value)} disabled={disabled} />
                     <button id="submit">Ler tag</button>
                 </Form>
             )}
@@ -89,17 +121,76 @@ export default function RfidShop({ onCreateNewRecommendation = () => 0, disabled
                 })}
                 {/* {rfidReturn.name} */}
             </Rfid>
+
+            <ItensRender>
+                {items.map((item, index)=>(
+                                    <Recommendation>
+                                        <Titles>
+                                            <h1>nome: {item.name}</h1>
+                                            <h3>id do produto: {item.id}</h3>
+                                            <h3>Preço: R${item.price} </h3>
+                                        </Titles>
+                                    </Recommendation>
+                ))}
+            </ItensRender>
+            
+
             <Warning>
                 <h3>
                 Cuidado ao postar!
                 </h3>
             </Warning>
-            <Back onClick={()=>navigate("/recommendations")}>
+            <Back onClick={()=>navigate("/market")}>
                 Desistiu de postar? Clique aqui para voltar
             </Back>
     </Container>
   );
 }
+const ItensRender=styled.div`
+  overflow-y: scroll;
+    max-height: 320px;
+` 
+
+const Recommendation = styled.div`
+  margin-top: 8px;
+  border: 2px solid black;
+  min-width: 300px;
+  min-height: 80px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  
+  
+  img{
+    height: 100px;
+    width: 100px;
+  }
+  h2{
+    display: flex;
+    flex-direction: row;
+    font-size: 20px;
+    h1{
+      color:red;
+      font-size: 20px;
+      margin-right: 2px;
+    }
+  }
+`
+const Titles = styled.div`
+  display: flex;
+  flex-direction: column;
+  h1{
+    color:black;
+    font-size: 15px;
+  }
+  h3{
+    margin: 3px 3px 3px 0;
+  }
+`
+
+
 const Rfid = styled.div`
 
     width: 80%;
